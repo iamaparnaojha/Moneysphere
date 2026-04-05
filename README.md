@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Finance Dashboard
 
 A modern, interactive finance dashboard built with React, TypeScript, and Tailwind CSS. Track your financial activity with beautiful visualizations, role-based access control, and comprehensive insights.
@@ -188,3 +189,6 @@ For support, please open an issue on the GitHub repository or contact the develo
 ---
 
 Built with ❤️ for modern financial tracking
+=======
+# Financial-dashboard
+>>>>>>> 4bdc5b131537ad79b8d1dfbcff0ba6edf5b2d29b
