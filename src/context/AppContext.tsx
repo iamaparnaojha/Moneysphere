@@ -274,7 +274,7 @@ function AppProviderInner({ children }: { children: React.ReactNode }) {
   }, [isAuthenticated, user]);
 
   const deleteCard = useCallback(async (id: string) => {
-    if (!isAuthenticated || user?.role !== 'admin') return;
+    if (!isAuthenticated || user?.role !== 'admin' || !id || id === 'undefined') return;
     await cardsApi.delete(id);
     dispatch({ type: 'DELETE_CARD', payload: id });
   }, [isAuthenticated, user]);

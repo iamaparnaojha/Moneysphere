@@ -52,14 +52,14 @@ router.post('/', adminOnly, async (req, res) => {
       category: category.trim(),
       description: description.trim(),
       type,
-      cardId: cardId || null
+      cardId: (cardId && mongoose.Types.ObjectId.isValid(cardId)) ? cardId : null
     });
 
     await transaction.save();
 
-    // Update card balance if cardId is provided
-    if (cardId) {
-      const card = await Card.findOne({ _id: cardId, userId: req.user.userId });
+    // Update card balance if valid cardId is provided
+    if (transaction.cardId) {
+      const card = await Card.findOne({ _id: transaction.cardId, userId: req.user.userId });
       if (card) {
         if (type === 'income') {
           card.balance += Number(amount);
@@ -103,13 +103,16 @@ router.put('/:id', adminOnly, async (req, res) => {
     const oldType = transaction.type;
     const oldCardId = transaction.cardId;
 
-    // Update transaction fields
     if (date) transaction.date = date;
-    if (amount !== undefined) transaction.amount = Number(amount);
+    if (amount !== undefined) transaction.amount = Number(amount) || 0;
     if (category) transaction.category = category.trim();
     if (description) transaction.description = description.trim();
     if (type) transaction.type = type;
-    if (cardId !== undefined) transaction.cardId = cardId || null;
+    
+    // Validate cardId if provided
+    if (cardId !== undefined) {
+      transaction.cardId = (cardId && mongoose.Types.ObjectId.isValid(cardId)) ? cardId : null;
+    }
 
     await transaction.save();
 
@@ -168,8 +171,8 @@ router.delete('/:id', adminOnly, async (req, res) => {
       return res.status(404).json({ message: 'Transaction not found.' });
     }
 
-    // Revert balance if card was associated
-    if (transaction.cardId) {
+    // Revert balance if card was associated and ID is valid
+    if (transaction.cardId && mongoose.Types.ObjectId.isValid(transaction.cardId)) {
       const card = await Card.findOne({ _id: transaction.cardId, userId: req.user.userId });
       if (card) {
         if (transaction.type === 'income') {

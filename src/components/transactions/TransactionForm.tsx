@@ -38,15 +38,25 @@ export function TransactionForm({ transaction, onClose }: TransactionFormProps) 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.amount || !formData.description) return;
+    const amountNum = parseFloat(formData.amount);
+    
+    if (isNaN(amountNum) || amountNum <= 0) {
+      setError('Please enter a valid amount greater than 0.');
+      return;
+    }
+
+    if (!formData.description.trim()) {
+      setError('Please enter a description.');
+      return;
+    }
 
     const transactionData = {
-      amount: parseFloat(formData.amount),
+      amount: amountNum,
       type: formData.type,
       category: formData.category,
-      cardId: formData.cardId || undefined,
+      cardId: formData.cardId.trim() !== '' ? formData.cardId : undefined,
       date: formData.date,
-      description: formData.description
+      description: formData.description.trim()
     };
 
     setIsSubmitting(true);
