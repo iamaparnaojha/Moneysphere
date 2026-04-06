@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const Transaction = require('../models/Transaction');
 const Card = require('../models/Card');
 const { authMiddleware, adminOnly } = require('../middleware/auth');
@@ -52,21 +53,26 @@ router.post('/', adminOnly, async (req, res) => {
       category: category.trim(),
       description: description.trim(),
       type,
-      cardId: (cardId && mongoose.Types.ObjectId.isValid(cardId)) ? cardId : null
+      cardId: (cardId && mongoose && mongoose.Types.ObjectId.isValid(cardId)) ? cardId : null
     });
 
     await transaction.save();
 
     // Update card balance if valid cardId is provided
     if (transaction.cardId) {
-      const card = await Card.findOne({ _id: transaction.cardId, userId: req.user.userId });
-      if (card) {
-        if (type === 'income') {
-          card.balance += Number(amount);
-        } else {
-          card.balance -= Number(amount);
+      try {
+        const card = await Card.findOne({ _id: transaction.cardId, userId: req.user.userId });
+        if (card) {
+          if (type === 'income') {
+            card.balance += Number(amount);
+          } else {
+            card.balance -= Number(amount);
+          }
+          await card.save();
         }
-        await card.save();
+      } catch (cardError) {
+        console.error('Card balance update error:', cardError);
+        // We don't fail the transaction if the balance update fails, but we log it
       }
     }
 
@@ -81,7 +87,11 @@ router.post('/', adminOnly, async (req, res) => {
     });
   } catch (error) {
     console.error('Create transaction error:', error);
-    res.status(500).json({ message: 'Failed to create transaction.' });
+    res.status(500).json({ 
+      message: 'Failed to create transaction.',
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined 
+    });
   }
 });
 
