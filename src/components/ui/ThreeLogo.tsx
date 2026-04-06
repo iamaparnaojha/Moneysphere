@@ -7,7 +7,7 @@ function FinancialLogo() {
   const coinRef = useRef<THREE.Group>(null);
   
   // Font URL for 3D Text
-  const fontUrl = "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/fonts/helvetiker_bold.typeface.json";
+  const fontUrl = "/helvetiker_bold.json";
 
   useFrame((state) => {
     if (coinRef.current) {
@@ -89,7 +89,7 @@ function FinancialLogo() {
       <pointLight position={[5, 5, 5]} intensity={1.5} color="#FFFFFF" />
       
       {/* Environment for reflections */}
-      <Environment preset="city" />
+      <Environment files="/potsdamer_platz_1k.hdr" />
     </group>
   );
 }
