@@ -9,6 +9,8 @@ import { TransactionList } from './components/transactions/TransactionList';
 import { ObservationCard } from './components/dashboard/ObservationCard';
 import { TransactionAnimationOverlay } from './components/ui/TransactionAnimationOverlay';
 import { CardsView } from './components/cards/CardsView';
+import Goals from './components/goals/Goals';
+import Settings from './components/settings/Settings';
 
 function DashboardContent() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -52,11 +54,15 @@ function DashboardContent() {
           </div>
         );
       case 'goals':
+        return (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <Goals />
+          </div>
+        );
       case 'settings':
         return (
-          <div className="flex flex-col items-center justify-center h-[60vh] glass-card animate-in zoom-in duration-500">
-            <h2 className="text-2xl font-bold mb-2">Coming Soon</h2>
-            <p className="text-gray-500">The {activeTab} feature is currently under development.</p>
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <Settings />
           </div>
         );
       default:
